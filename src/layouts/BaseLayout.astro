@@ -1,0 +1,62 @@
+---
+import { Font } from 'astro:assets';
+import '../styles/global.css';
+import { site } from '../site';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title,
+  description = `The Year 2 ${site.course} portfolio of ${site.author} at ${site.school}.`,
+} = Astro.props;
+
+const pageTitle = title
+  ? `${title} — ${site.title}`
+  : `${site.title} — ${site.author}`;
+
+const canonical = Astro.site
+  ? new URL(Astro.url.pathname, Astro.site).href
+  : Astro.url.pathname;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="generator" content={Astro.generator} />
+
+    <Font cssVariable="--font-display" preload />
+    <Font cssVariable="--font-body" preload />
+    <Font cssVariable="--font-mono" />
+  </head>
+
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <div class="band-ink">
+      <SiteHeader />
+      <slot name="banner" />
+    </div>
+
+    <main id="main">
+      <slot />
+    </main>
+
+    <div class="band-ink">
+      <SiteFooter />
+    </div>
+  </body>
+</html>

@@ -1,0 +1,42 @@
+---
+import { formatDate, isoDate } from '../lib/text';
+
+interface Props {
+  id: string;
+  number: string;
+  title: string;
+  date: Date;
+  summary: string;
+  tags: readonly string[];
+  minutes: number;
+}
+
+const { id, number, title, date, summary, tags, minutes } = Astro.props;
+---
+
+<li class="entry-row">
+  <div class="entry-row__num" aria-hidden="true">{number}</div>
+
+  <div>
+    <div class="entry-row__meta">
+      <time datetime={isoDate(date)}>{formatDate(date)}</time>
+      <span>{minutes} min read</span>
+    </div>
+
+    <h2 class="entry-row__title">
+      <a href={`/entries/${id}/`}>{title}</a>
+    </h2>
+
+    <p class="entry-row__summary">{summary}</p>
+
+    {
+      tags.length > 0 && (
+        <ul class="tags">
+          {tags.map((tag) => (
+            <li>{tag}</li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</li>

@@ -1,0 +1,72 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Refs from '../../components/Refs.astro';
+import { entryNumber, formatDate, isoDate, readingTime } from '../../lib/text';
+
+export async function getStaticPaths() {
+  const all = (
+    await getCollection('entries', ({ data }) =>
+      import.meta.env.PROD ? !data.draft : true,
+    )
+  ).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+
+  return all.map((entry, index) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      number: entryNumber(index),
+      prev: index > 0 ? all[index - 1] : null,
+      next: index < all.length - 1 ? all[index + 1] : null,
+    },
+  }));
+}
+
+const { entry, number, prev, next } = Astro.props;
+const { Content } = await render(entry);
+const minutes = readingTime(entry.body ?? '');
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.summary}>
+  <div class="wrap wrap--narrow entry-head" slot="banner">
+    <div class="entry-head__meta">
+      <span class="entry-head__num">Entry {number}</span>
+      <time datetime={isoDate(entry.data.date)}>{formatDate(entry.data.date)}</time>
+      <span>{minutes} min read</span>
+    </div>
+
+    <h1 class="entry-head__title">{entry.data.title}</h1>
+    <p class="entry-head__summary">{entry.data.summary}</p>
+  </div>
+
+  <div class="wrap wrap--narrow entry-body">
+    <article class="prose">
+      <Content />
+    </article>
+
+    <Refs sources={entry.data.sources} aiUse={entry.data.aiUse} />
+
+    {
+      (prev || next) && (
+        <nav class="pager" aria-label="More entries">
+          {prev ? (
+            <a class="pager__link" href={`/entries/${prev.id}/`}>
+              <span class="pager__dir">Previous</span>
+              <span class="pager__title">{prev.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+          {next ? (
+            <a class="pager__link pager__link--next" href={`/entries/${next.id}/`}>
+              <span class="pager__dir">Next</span>
+              <span class="pager__title">{next.data.title}</span>
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )
+    }
+  </div>
+</BaseLayout>

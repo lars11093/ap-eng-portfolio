@@ -1,0 +1,23 @@
+---
+import { site } from '../site';
+
+const lastUpdated = new Intl.DateTimeFormat('en-GB', {
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+}).format(new Date());
+---
+
+<footer class="site-footer">
+  <div class="wrap site-footer__inner">
+    <p class="site-footer__note">
+      {site.title}, {site.year} — {site.course} at {site.school}.<br />
+      Written and maintained by {site.author} for {site.teacher}.
+    </p>
+
+    <p class="site-footer__note">
+      Every entry lists its sources and states how AI tools were used.<br />
+      Built with <a href="https://astro.build">Astro</a>. Last updated {lastUpdated}.
+    </p>
+  </div>
+</footer>

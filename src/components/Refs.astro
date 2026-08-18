@@ -1,0 +1,52 @@
+---
+interface Source {
+  label: string;
+  url?: string;
+  note?: string;
+}
+
+interface Props {
+  sources: readonly Source[];
+  aiUse: string;
+}
+
+const { sources, aiUse } = Astro.props;
+---
+
+<section class="refs" aria-label="Sources and use of AI">
+  <div class="refs__section">
+    <h2 class="refs__label">Sources</h2>
+
+    {
+      sources.length > 0 ? (
+        <ul class="refs__list">
+          {sources.map((source) => (
+            <li>
+              <span>
+                {source.url ? (
+                  <a href={source.url} rel="noopener noreferrer" target="_blank">
+                    {source.label}
+                  </a>
+                ) : (
+                  source.label
+                )}
+              </span>
+              {source.url && <span class="refs__url">{source.url}</span>}
+              {source.note && <span class="refs__note">{source.note}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="refs__text">
+          This entry is written entirely from my own classwork and notes. No outside
+          sources were used.
+        </p>
+      )
+    }
+  </div>
+
+  <div class="refs__section">
+    <h2 class="refs__label">How I used AI</h2>
+    <p class="refs__text">{aiUse}</p>
+  </div>
+</section>

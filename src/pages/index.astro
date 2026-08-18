@@ -1,0 +1,79 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import YearSpine from '../components/YearSpine.astro';
+import EntryRow from '../components/EntryRow.astro';
+import { site } from '../site';
+import { entryNumber, readingTime } from '../lib/text';
+
+// Drafts are visible while writing locally, hidden in the deployed build.
+const all = (
+  await getCollection('entries', ({ data }) =>
+    import.meta.env.PROD ? !data.draft : true,
+  )
+).sort((a, b) => a.data.date.valueOf() - b.data.date.valueOf());
+
+// Numbering runs chronologically: 01 is the first entry of the school year.
+const numbered = all.map((entry, index) => ({
+  entry,
+  number: entryNumber(index),
+  minutes: readingTime(entry.body ?? ''),
+}));
+
+const newestFirst = [...numbered].reverse();
+
+const spineEntries = numbered.map(({ entry, number }) => ({
+  id: entry.id,
+  title: entry.data.title,
+  date: entry.data.date,
+  number,
+}));
+---
+
+<BaseLayout>
+  <div class="wrap masthead" slot="banner">
+    <h1 class="masthead__title">{site.title}</h1>
+
+    <div class="masthead__rule"></div>
+
+    <dl class="masthead__meta">
+      <div class="masthead__pair"><dt>Student</dt><dd>{site.author}</dd></div>
+      <div class="masthead__pair"><dt>Course</dt><dd>{site.course}</dd></div>
+      <div class="masthead__pair">
+        <dt>Year</dt><dd>{site.year} · {site.schoolYear.label}</dd>
+      </div>
+      <div class="masthead__pair"><dt>School</dt><dd>{site.schoolShort}</dd></div>
+      <div class="masthead__pair"><dt>Teacher</dt><dd>{site.teacher}</dd></div>
+    </dl>
+  </div>
+
+  <YearSpine entries={spineEntries} />
+
+  <div class="wrap">
+    {
+      newestFirst.length > 0 ? (
+        <ol class="entries" role="list">
+          {newestFirst.map(({ entry, number, minutes }) => (
+            <EntryRow
+              id={entry.id}
+              number={number}
+              title={entry.data.title}
+              date={entry.data.date}
+              summary={entry.data.summary}
+              tags={entry.data.tags}
+              minutes={minutes}
+            />
+          ))}
+        </ol>
+      ) : (
+        <div class="empty">
+          <h2>No entries yet</h2>
+          <p>
+            Add a Markdown file to <code>src/content/entries/</code>, or write one in
+            the <a href="/admin">editor</a>.
+          </p>
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>

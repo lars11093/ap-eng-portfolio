@@ -1,0 +1,83 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../site';
+---
+
+<BaseLayout
+  title="About"
+  description={`How the ${site.year} ${site.course} portfolio of ${site.author} is organised, sourced, and written.`}
+>
+  <div class="wrap wrap--narrow page-head" slot="banner">
+    <p class="eyebrow">About this portfolio</p>
+    <h1 class="page-head__title">How this site works</h1>
+  </div>
+
+  <div class="wrap wrap--narrow entry-body">
+    <article class="prose">
+      <p>
+        This is my {site.year} portfolio for {site.course} at {site.school}. It
+        collects the official portfolio entries we were set during the {site.schoolYear.label}
+        school year, and it replaces the Class Notebook we used in Year 1.
+      </p>
+
+      <h2>How the entries are organised</h2>
+      <p>
+        Every entry has a title, a date, and a number. The numbering is
+        chronological, so entry 01 is the first piece of work of the school year
+        and the newest entry always sits at the top of the home page. The row of
+        markers under the masthead shows the whole school year at a glance: a
+        filled dot is a finished entry, and a dashed outline is a month that is
+        still empty. It is there so that anyone reading this — including me — can
+        see straight away whether the portfolio is complete.
+      </p>
+      <p>
+        Each entry ends with the same two blocks: <strong>Sources</strong> and
+        <strong>How I used AI</strong>. They are part of the page template rather
+        than something I remember to add, which means no entry can be published
+        without them.
+      </p>
+
+      <h2>How I use AI in this portfolio</h2>
+      <p>
+        I use AI tools, and I would rather be precise about it than vague. My rule
+        is simple: <strong>the thinking and the reflection are mine, and the words
+        are mine.</strong> AI is useful to me in three narrow ways.
+      </p>
+      <ul>
+        <li>
+          <strong>Checking my English.</strong> I am not a native speaker, so I
+          sometimes ask a model to point out grammar mistakes or unnatural phrasing
+          in a paragraph I have already written. I decide which corrections to take.
+        </li>
+        <li>
+          <strong>Explaining something I did not understand.</strong> If a technical
+          term from class is unclear, I ask for an explanation and then verify it
+          against a second, citable source before I write about it.
+        </li>
+        <li>
+          <strong>Building this website.</strong> The code behind the site was
+          written with the help of an AI coding assistant. That is a tool choice,
+          not a shortcut around the writing.
+        </li>
+      </ul>
+      <p>
+        What I do not do is ask a model to write an entry for me. A reflection that
+        I did not think through would be worth nothing to me, and it would be
+        obvious to read. Where AI made a real difference to a specific entry, the
+        "How I used AI" block on that entry says exactly what it did.
+      </p>
+
+      <h2>Colophon</h2>
+      <p>
+        The site is built with <a href="https://astro.build">Astro</a> and deployed
+        on Vercel. Each entry is a Markdown file kept in a Git repository, so the
+        full history of what I wrote and when is preserved. Type is set in Archivo
+        for headings and interface text, Newsreader for reading, and JetBrains Mono
+        for dates and labels.
+      </p>
+      <p>
+        Written and maintained by {site.author} for {site.teacher}.
+      </p>
+    </article>
+  </div>
+</BaseLayout>

@@ -1,0 +1,79 @@
+---
+import { site } from '../site';
+import { formatDateShort } from '../lib/text';
+
+export interface SpineEntry {
+  id: string;
+  title: string;
+  date: Date;
+  number: string;
+}
+
+interface Props {
+  entries: SpineEntry[];
+}
+
+const { entries } = Astro.props;
+
+// One slot per month of the school year, so months without an entry stay
+// visible as a gap. Completeness is the first thing the reader should see.
+const start = new Date(site.schoolYear.start);
+const monthFormat = new Intl.DateTimeFormat('en-GB', { month: 'short' });
+
+let order = 0;
+const months = Array.from({ length: 12 }, (_, i) => {
+  const cursor = new Date(start.getFullYear(), start.getMonth() + i, 1);
+  const inMonth = entries
+    .filter(
+      (entry) =>
+        entry.date.getFullYear() === cursor.getFullYear() &&
+        entry.date.getMonth() === cursor.getMonth(),
+    )
+    .map((entry) => ({ ...entry, order: order++ }));
+
+  return {
+    key: `${cursor.getFullYear()}-${cursor.getMonth()}`,
+    label: monthFormat.format(cursor),
+    entries: inMonth,
+  };
+});
+
+const filledMonths = months.filter((month) => month.entries.length > 0).length;
+---
+
+<section class="wrap spine" aria-labelledby="spine-title">
+  <div class="spine__head">
+    <h2 class="eyebrow" id="spine-title">The year so far · {site.schoolYear.label}</h2>
+    <p class="spine__count">
+      <b>{entries.length}</b>
+      {entries.length === 1 ? 'entry' : 'entries'} across <b>{filledMonths}</b> of 12 months
+    </p>
+  </div>
+
+  <div class="spine__scroll">
+    <ol class="spine__track">
+      {
+        months.map((month) => (
+          <li class="spine__month" data-filled={month.entries.length > 0 ? 'true' : 'false'}>
+            <div class="spine__nodes">
+              {month.entries.length === 0 && <span class="spine__gap" aria-hidden="true" />}
+              {month.entries.map((entry) => (
+                <a
+                  class="spine__node"
+                  href={`/entries/${entry.id}/`}
+                  style={`animation-delay:${entry.order * 45}ms`}
+                  title={`${entry.number} · ${entry.title} · ${formatDateShort(entry.date)}`}
+                >
+                  <span class="sr-only">
+                    Entry {entry.number}: {entry.title}, {formatDateShort(entry.date)}
+                  </span>
+                </a>
+              ))}
+            </div>
+            <span class="spine__label">{month.label}</span>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
